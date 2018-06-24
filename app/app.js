@@ -91,18 +91,13 @@ bot.on("message", msg => {
     }
 
     if(response){
-        var process_response = function(response){
+        Promise.resolve(response).then(response => {
             msg.channel.startTyping();
             wait(response.length*type_speed).then(() => msg.channel.send(response, options))
                 .then(() => console.log)
                 .then(() => msg.channel.stopTyping(true))
                 .catch(() => console.error);
-        };
-        if(response.then){
-            response.then( r => process_response(r))
-        }else{
-            process_response(response);
-        }
+        });
     }
 });
 
