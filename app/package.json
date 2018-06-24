@@ -1,0 +1,13 @@
+{
+    "name": "mrbot",
+    "version": "0.1.1",
+    "description": "Mi fantástico bot para Discord",
+    "scripts": {
+        "start": "npm install && nodemon app.js"
+    },
+    "author": "Alex",
+    "license": "GPL",
+    "dependencies": {
+        "discord.js": "latest"
+    }
+}
