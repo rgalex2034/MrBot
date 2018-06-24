@@ -8,6 +8,8 @@
     "author": "Alex",
     "license": "GPL",
     "dependencies": {
-        "discord.js": "latest"
+        "discord.js": "latest",
+        "node-fetch": "latest",
+        "jsdom": "latest"
     }
 }

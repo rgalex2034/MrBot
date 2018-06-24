@@ -1,6 +1,7 @@
 var fs = require("fs");
 var Discord = require("discord.js");
 var Poll = require("./tools/poll.js");
+var Search = require("./tools/search/search.js");
 
 function wait(ms){
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -31,7 +32,17 @@ bot.on("message", msg => {
 
     var matches;
 
-    if(matches = msg.content.match(/^poll:(.*)\n((?:.|\n)*)/i)){
+    if(matches = msg.content.match(/\?(\w+) (.+)/)){
+        type_speed = 0;
+        var provider = matches[1];
+        var query = matches[2];
+        var search = Search.getInstance(provider);
+        if(!search.provider) return;
+        var results = search.search(query);
+        response = results.then(r => {
+            return r.reduce((msg, el) => msg+el.toString()+"\n---\n", "");
+        });
+    }else if(matches = msg.content.match(/^poll:(.*)\n((?:.|\n)*)/i)){
         //Create new Poll
         type_speed = 0;
         var title = matches[1].trim();
@@ -80,11 +91,18 @@ bot.on("message", msg => {
     }
 
     if(response){
-        msg.channel.startTyping();
-        wait(response.length*type_speed).then(() => msg.channel.send(response, options))
-            .then(() => console.log)
-            .then(() => msg.channel.stopTyping(true))
-            .catch(() => console.error);
+        var process_response = function(response){
+            msg.channel.startTyping();
+            wait(response.length*type_speed).then(() => msg.channel.send(response, options))
+                .then(() => console.log)
+                .then(() => msg.channel.stopTyping(true))
+                .catch(() => console.error);
+        };
+        if(response.then){
+            response.then( r => process_response(r))
+        }else{
+            process_response(response);
+        }
     }
 });
 
