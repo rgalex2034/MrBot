@@ -92,6 +92,7 @@ bot.on("message", msg => {
 
     if(response){
         Promise.resolve(response).then(response => {
+            if(!response) return;
             msg.channel.startTyping();
             wait(response.length*type_speed).then(() => msg.channel.send(response, options))
                 .then(() => console.log)

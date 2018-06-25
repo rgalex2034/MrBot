@@ -7,7 +7,6 @@ function Search(){
 Search.providers = providers;
 
 Search.getInstance = function(provider_name){
-    console.log(Search.providers);
     var search = new Search();
     var providerjs = Search.providers[provider_name];
     if(providerjs){
