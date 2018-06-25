@@ -38,7 +38,7 @@ Search.Result = function(title, desc, url, thumb = null){
 };
 
 Search.Result.prototype.toString = function(){
-    return `**${this.title}**\n_<${this.url}>_\n${this.desc}`;
+    return `**${this.title}**\n*<${this.url}>*\n${this.desc}`;
 };
 
 module.exports = Search;
