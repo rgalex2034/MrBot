@@ -35,12 +35,16 @@ function getResults(doc_text, qnt){
             var title = web_res.querySelector(".result__title .result__a").innerHTML;
             var url = web_res.querySelector(".result__title .result__a").getAttribute("href");
             var desc = web_res.querySelector(".result__snippet").innerHTML;
-            results.push({title: title, url: url, desc: desc});
+            results.push({title: deleteTags(title), url: url, desc: deleteTags(desc)});
         }
     }
     console.log("Done!!");
     //return [{title: "Prueba", url: "https://www.google.com", desc: "Description test"}];
     return results;
 }
+
+function deleteTags(text){
+    return text.replace(/<[^>]+>/g, "");
+};
 
 module.exports = provider;

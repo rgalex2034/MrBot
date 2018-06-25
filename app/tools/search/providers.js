@@ -1,5 +1,6 @@
 var providers = {
-    ddg: "duckduckgo.js"
+    ddg: "duckduckgo.js",
+    g: "googlesearch.js"
 }
 
 module.exports = providers;

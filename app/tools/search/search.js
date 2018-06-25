@@ -1,4 +1,5 @@
 var providers = require("./providers.js");
+var options = require("./config.json");
 
 function Search(){
 }
@@ -11,19 +12,20 @@ Search.getInstance = function(provider_name){
     var providerjs = Search.providers[provider_name];
     if(providerjs){
         var provider = require("./providers/"+providerjs);
-        search.setProvider(provider);
+        var op = options[provider_name] || {};
+        search.setProvider(provider, op);
     }
     return search;
 };
 
-Search.prototype.setProvider = function(provider){
+Search.prototype.setProvider = function(provider, options = {}){
     this.provider = provider;
-    this.provider.init();
+    this.provider.init(options);
 };
 
 Search.prototype.search = function(q, qnt = 3){
-    return this.provider.search(q, qnt).then(results => {
-        return results.map(r => new Search.Result(deleteTags(r.title), deleteTags(r.desc), r.url, r.thumb));
+    return Promise.resolve(this.provider.search(q, qnt)).then(results => {
+        return results.map(r => new Search.Result(r.title, r.desc, r.url, r.thumb));
     });
 
 };
@@ -37,10 +39,6 @@ Search.Result = function(title, desc, url, thumb = null){
 
 Search.Result.prototype.toString = function(){
     return `**${this.title}**\n_<${this.url}>_\n${this.desc}`;
-};
-
-function deleteTags(text){
-    return text.replace(/<[^>]+>/g, "");
 };
 
 module.exports = Search;
