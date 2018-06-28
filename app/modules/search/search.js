@@ -1,18 +1,16 @@
 var providers = require("./providers.js");
-var options = require("./config.json");
 
 function Search(){
 }
 
 Search.providers = providers;
 
-Search.getInstance = function(provider_name){
+Search.getInstance = function(provider_name, options = {}){
     var search = new Search();
     var providerjs = Search.providers[provider_name];
     if(providerjs){
         var provider = require("./providers/"+providerjs);
-        var op = options[provider_name] || {};
-        search.setProvider(provider, op);
+        search.setProvider(provider, options);
     }
     return search;
 };
