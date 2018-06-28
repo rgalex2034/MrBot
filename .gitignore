@@ -1,3 +1,3 @@
 app/token
 app/node_modules
-app/tools/search/config.json
+app/modules/search/config.json

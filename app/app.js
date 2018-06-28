@@ -1,105 +1,33 @@
 var fs = require("fs");
+var path = require("path");
 var Discord = require("discord.js");
-var Poll = require("./tools/poll.js");
-var Search = require("./tools/search/search.js");
+var modules = require("./modules.json");
 
 function wait(ms){
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-var polls = [];
-
 var bot = new Discord.Client();
 
 bot.on("ready", () => {
     console.log(`Logged in as ${bot.user.tag}`);
-});
 
-bot.on("message", msg => {
-    var check_bot = true;
-
-    var response = false;
-    var options = {};
-    var type_speed = 70;
-
-    if(msg.content == "Ardilla!" && msg.author.bot){
-        check_bot = false;
-        response = "¿¡QUIEN ERES!?";
+    if(!modules) modules = [];
+    //Load modules
+    for(let i = 0; i < modules.length; i++){
+        let module_name = modules[i];
+        let file;
+        if(fs.existsSync(file = "./modules"+path.sep+module_name+path.sep+"module.js")){
+            try{
+                let module_obj = require(file);
+                module_obj.init(bot);
+                console.log(`Module loaded: ${module_name}`);
+            }catch(error){
+                console.log(`Unable to load module ${module_name}: ${error}\n`);
+            }
+        }else console.log(`Module not found: ${module_name}`);
     }
 
-    //Ignore messages if come from a bot
-    if(msg.author.bot && check_bot) return;
-
-    var matches;
-
-    if(matches = msg.content.match(/\?(\w+) (.+)/)){
-        type_speed = 0;
-        var provider = matches[1];
-        var query = matches[2];
-        var search = Search.getInstance(provider);
-        if(!search.provider) return;
-        var results = search.search(query);
-        response = results.then(r => {
-            return r.reduce((msg, el) => msg+el.toString()+"\n---\n", "");
-        });
-    }else if(matches = msg.content.match(/^poll:(.*)\n((?:.|\n)*)/i)){
-        //Create new Poll
-        type_speed = 0;
-        var title = matches[1].trim();
-        var options = matches[2].trim().split("\n");
-        polls.push(new Poll.Poll(title, options));
-        var id = polls.length - 1;
-
-        response = `Ecuesta #${id}:\n`;
-        response += polls[id].getVoteMessage();
-    }else if(matches = msg.content.match(/^vote: *(\d*) *(\d*)$/i)){
-        //Vote for a poll
-        type_speed = 0;
-        var poll = matches[1];
-        var option = matches[2];
-        if(!polls[poll] || !polls[poll].options[option]) return;
-        polls[poll].vote(msg.author.username, option);
-        response = `${msg.author.username} ha votado ${polls[poll].options[option]} para ${polls[poll].question}`;
-        console.log(response);
-    }else if(matches = msg.content.match(/^show: *(\d*)$/i)){
-        //Show a poll with results
-        type_speed = 0;
-        var poll = matches[1];
-        if(!polls[poll]) return;
-        response = `Ecuesta #${poll}:\n`;
-        response += polls[poll].getVoteMessage(true);
-    }else if(matches = msg.content.match(/^end: *(\d*)$/i)){
-        //End poll and show results
-        type_speed = 0;
-        var poll = matches[1];
-        if(!polls[poll]) return;
-        response = "Encuesta finalizada!\n";
-        response += `Ecuesta #${poll}:\n`;
-        response += polls[poll].getVoteMessage(true);
-        polls[poll] = undefined;
-    }else if(msg.content.match(/h?alfonso,? la cerveza/i)){
-        response = msg.author.username === "Francisco" ? "Aquí tienes mi señor :beer:" : "Tu callate, blanquito de mierda";
-    }
-    else if(msg.content.match(/honor/i)){
-        response = "honir*";
-    }
-    else if(msg.content.match(/negr[o0]+!*/i)){
-        response = "Como el chocolate";
-    }else if(msg.content.match(/^tts$|^titt?ies$/i)){
-        response = "Titties";
-        options.tts = true;
-    }
-
-    if(response){
-        Promise.resolve(response).then(response => {
-            if(!response) return;
-            msg.channel.startTyping();
-            wait(response.length*type_speed).then(() => msg.channel.send(response, options))
-                .then(() => console.log)
-                .then(() => msg.channel.stopTyping(true))
-                .catch(() => console.error);
-        });
-    }
 });
 
 fs.readFile("token", "utf8", (error, token) => bot.login(token.trim()));
