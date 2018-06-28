@@ -1,6 +1,7 @@
 var providers = require("./providers.js");
 
-function Search(){
+function Search(provider = null){
+    if(provider) this.setProvider(provider);
 }
 
 Search.providers = providers;
@@ -10,14 +11,14 @@ Search.getInstance = function(provider_name, options = {}){
     var providerjs = Search.providers[provider_name];
     if(providerjs){
         var provider = require("./providers/"+providerjs);
-        search.setProvider(provider, options);
+        provider.init(options);
+        search.setProvider(provider);
     }
     return search;
 };
 
-Search.prototype.setProvider = function(provider, options = {}){
+Search.prototype.setProvider = function(provider){
     this.provider = provider;
-    this.provider.init(options);
 };
 
 Search.prototype.search = function(q, qnt = 3){
