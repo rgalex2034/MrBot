@@ -3,10 +3,6 @@ var path = require("path");
 var Discord = require("discord.js");
 var modules = require("./modules.json");
 
-function wait(ms){
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 var bot = new Discord.Client();
 
 bot.on("ready", () => {
