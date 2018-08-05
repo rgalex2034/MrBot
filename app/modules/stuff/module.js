@@ -38,9 +38,9 @@ module.exports = {
             if(response){
                 msg.channel.startTyping();
                 wait(response.length*type_speed).then(() => msg.channel.send(response, options))
-                    .then(() => console.log)
+                    .then(() => console.log.bind(console))
                     .then(() => msg.channel.stopTyping(true))
-                    .catch(() => console.error);
+                    .catch(() => console.error.bind(console));
             }
         });
     }

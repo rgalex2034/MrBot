@@ -39,8 +39,8 @@ module.exports = {
                     Promise.resolve(response).then(response => {
                         if(!response) return;
                         msg.channel.send(response)
-                            .then(() => console.log)
-                            .catch(() => console.error);
+                            .then(() => console.log.bind(console))
+                            .catch(() => console.error.bind(console));
                     });
                 }
 
