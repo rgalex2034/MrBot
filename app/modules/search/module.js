@@ -40,7 +40,7 @@ module.exports = {
                         if(!response) return;
                         msg.channel.send(response)
                             .then(() => console.log.bind(console))
-                            .catch(() => console.error.bind(console));
+                            .catch(err  => console.error(err));
                     });
                 }
 
