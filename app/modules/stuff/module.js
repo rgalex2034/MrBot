@@ -40,7 +40,7 @@ module.exports = {
                 wait(response.length*type_speed).then(() => msg.channel.send(response, options))
                     .then(() => console.log.bind(console))
                     .then(() => msg.channel.stopTyping(true))
-                    .catch(() => console.error.bind(console));
+                    .catch(err => console.error(err));
             }
         });
     }
