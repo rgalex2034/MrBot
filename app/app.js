@@ -1,7 +1,8 @@
 var fs = require("fs");
 var path = require("path");
 var Discord = require("discord.js");
-var modules = require("./modules.json");
+var config = require("./bot-config.json");
+var modules = config.modules;
 
 var bot = new Discord.Client();
 
@@ -26,6 +27,6 @@ bot.on("ready", () => {
 
 });
 
-fs.readFile("token", "utf8", (error, token) => bot.login(token.trim()));
+bot.login(config.token.trim());
 
 console.log("done");
